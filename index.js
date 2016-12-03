@@ -1,23 +1,34 @@
 "use strict";
 const fs = require('fs');
-var groceryArr = fs.readFileSync('./lists/groceries', 'utf8').trim().split("\n\n");
+var oriGroceryArr = fs.readFileSync('./lists/groceries', 'utf8').trim().split("\n");
 var unwantedArr = fs.readFileSync('./lists/unwanted', 'utf8').trim().split("\n\n");
-const TOTAL = 129.11;
+const TOTAL = 87.88;
 const N = 4;
 var balances = {
-  "eric": TOTAL/N,
-  "kevin": TOTAL/N,
   "eitan": TOTAL/N,
-  "gumar": TOTAL/N
-}
+  "eric": TOTAL/N,
+  "goom": TOTAL/N,
+  "gayvin": TOTAL/N
+};
 var groceries = {};
+var groceryArr = [];
+var temp = [];
+for (let i = 0; i < oriGroceryArr.length; i++) {
+  temp.push(oriGroceryArr[i]);
+  if (temp.length == 3) {
+    groceryArr.push(temp);
+    temp = [];
+  }
+}
 for (let i = 0; i < groceryArr.length; i++) {
-  var item = groceryArr[i].split("\n");
-  if (item.length != 5) {
+  var item = groceryArr[i];
+  if (item.length != 3) {
     console.log(item);
     throw "error parsing! item length not 5 lines";
   }
-  groceries[item[1].toLowerCase()] = Number(item[4].replace(/[^0-9\.]+/g,""))
+  var name = item[0].trim().toLowerCase();
+  name = name.substring(0, name.indexOf("image") - 1).trim();
+  groceries[name] = Number(item[2].replace(/[^0-9\.]+/g,""));
 }
 var unwanted = {};
 for (let i = 0; i < unwantedArr.length; i++) {
