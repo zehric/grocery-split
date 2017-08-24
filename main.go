@@ -238,5 +238,5 @@ func main() {
 
 	readData()
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
