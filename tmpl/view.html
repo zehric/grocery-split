@@ -1,0 +1,33 @@
+{{define "content"}}
+<div class="container">
+    <div class="base">
+        <h1>Groceries</h1>
+        <h2 id="balance"></h2>
+        <div id="balances"></div>
+        <div id="reset" style="display: none">
+            <a href="/reset/" class="btn btn-lg btn-primary">Reset</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+    });
+    const balances = {};
+    {{ range $key, $value := .Balances }}
+        balances[{{$key}}] = formatter.format({{$value}});
+    {{ end }}
+    window.onload = function () {
+        const username = Cookies.get("username");
+        const balance = balances[username];
+        $("#balance").text("You (" + username + ") owe " + balance);
+        $("#balances").text(JSON.stringify(balances, null, 2).replace(/[\"\\[*?\]{}]/g, ""));
+        if (username === "{{.Creator}}") {
+            $("#reset").toggle();
+        }
+    };
+</script>
+{{end}}

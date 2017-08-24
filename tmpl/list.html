@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="container">
+    <div class="base">
+        <h1>Groceries</h1>
+        {{.Html}}
+        <p></p>
+        <button class="btn btn-lg btn-primary" onclick="submit()">Submit</button>
+        <a data-creator="{{.Creator}}" href="/reset/" class="btn btn-lg" id="reset" style="display: none">Reset</a>
+    </div>
+</div>
+
+<script src="/static/js/list.js"></script>
+{{end}}

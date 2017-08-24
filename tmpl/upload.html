@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="container">
+    <div class="base">
+        <h1>Groceries</h1>
+        <form action="/upload/" method="POST">
+            <div><textarea name="body" rows="20" cols="80" placeholder="Paste HTML From PrimeNow" required=""></textarea></div>
+            # of Participants: <input id="num" name="num" type="number" min="2" max="4" value="4" required="">
+            <p></p>
+            <button class="btn btn-lg btn-primary" type="submit">Upload</button>
+        </form>
+    </div>
+</div>
+{{end}}
