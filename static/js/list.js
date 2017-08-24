@@ -19,6 +19,8 @@ function submit() {
         if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
             if (xhr.responseText === "refresh") {
                 window.location.reload();
+            } else {
+                alert("Submitted!");
             }
         }
     };
