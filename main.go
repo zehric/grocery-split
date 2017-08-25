@@ -214,6 +214,7 @@ func resetHandler(w http.ResponseWriter, r *http.Request) {
 		os.MkdirAll("data", 0600)
 		uploadInfo = &UploadInfo{Groceries: make(map[string]float64)}
 		submitInfo = &SubmitInfo{Unwanted: make(map[string]StringSet)}
+		submitInfo.Ready = StringSet{make(map[string]struct{})}
 		balances = make(map[string]float64)
 		http.Redirect(w, r, "/dash/", http.StatusFound)
 	}
