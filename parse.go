@@ -24,6 +24,9 @@ func traverseHtml(n *html.Node, fn func(node *html.Node) bool) {
 func parseCost(n *html.Node) (float64, error) {
 	data := strings.TrimSpace(n.FirstChild.Data)
 	if len(data) > 0 && data[:1] == "$" {
+		if data[len(data)-1:] == "*" {
+			data = data[:len(data)-1]
+		}
 		cost, err := strconv.ParseFloat(data[1:], 64)
 		if err == nil {
 			return cost, nil
@@ -52,18 +55,20 @@ func findList(n *html.Node) bool {
 func addToGroceries(n *html.Node) bool {
 	if n.Type == html.ElementNode {
 		for _, attribute := range n.Attr {
-			if attribute.Key == "class" && attribute.Val == "a-size-base-plus a-color-base" {
-				name := strings.TrimSpace(n.FirstChild.Data)
-				if name != "" {
-					names = append(names, name)
-					submitInfo.Unwanted[name] = StringSet{Vals: make(map[string]struct{})}
+			if attribute.Key == "class" {
+				if attribute.Val == "a-size-base-plus a-color-base" {
+					name := strings.TrimSpace(n.FirstChild.Data)
+					if name != "" {
+						names = append(names, name)
+						submitInfo.Unwanted[name] = StringSet{Vals: make(map[string]struct{})}
+					}
 				}
-			}
-			if attribute.Key == "class" &&
-				attribute.Val == "a-size-base-plus a-color-base a-text-bold a-nowrap" {
-				cost, err := parseCost(n)
-				if cost != 0.0 && err == nil {
-					costs = append(costs, cost)
+				if attribute.Val == "a-size-base-plus a-color-base a-text-bold a-nowrap" ||
+					attribute.Val == "a-size-base-plus a-text-bold" {
+					cost, err := parseCost(n)
+					if cost != 0.0 && err == nil {
+						costs = append(costs, cost)
+					}
 				}
 			}
 		}
