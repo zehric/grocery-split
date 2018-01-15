@@ -16,12 +16,15 @@ function submit() {
     xhr.open("POST", 'http://' + window.location.host + '/submit/', true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function() {//Call a function when the state changes.
-        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
             if (xhr.responseText === "refresh") {
                 window.location.reload();
             } else {
                 alert("Submitted!");
             }
+        }
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 500) {
+            alert(xhr.responseText);
         }
     };
     xhr.send(JSON.stringify(Array.from(toSubmit)));
@@ -32,5 +35,6 @@ window.onload = function () {
     if (resetLink.data("creator") === Cookies.get("username")) {
         resetLink.toggle();
     }
+    $("#welcome").text("Welcome, " + Cookies.get("username") + "!");
 };
 

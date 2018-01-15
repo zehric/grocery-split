@@ -15,7 +15,6 @@ import (
 )
 
 // TODO: reduce redundancy on cookies
-// TODO: add error for when four people do not want an item
 
 type UploadInfo struct {
 	Groceries  map[string]float64
@@ -100,8 +99,16 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		FindList(doc)
-		AddToGroceries(list)
+		list, err := FindList(doc)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = AddToGroceries(list)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		b := new(bytes.Buffer)
 		html.Render(b, list)
@@ -166,7 +173,10 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		if uint8(submitInfo.Ready.Length()) == uploadInfo.N {
 			err = calculate()
 			if err != nil {
+				balances = make(map[string]float64)
+				submitInfo.Ready.Remove(cookie.Value)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			makeGob(w, "balances", balances)
 			w.Write([]byte("refresh"))
@@ -197,6 +207,10 @@ func readGob(name string, o interface{}) error {
 }
 
 func readData() {
+	_, err := os.Stat("data")
+	if os.IsNotExist(err) {
+		os.Mkdir("data", 0600)
+	}
 	if readGob("upload", &uploadInfo) != nil || readGob("submit", &submitInfo) != nil {
 		return
 	}
@@ -211,7 +225,7 @@ func resetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/dash/", http.StatusFound)
 	} else {
 		os.RemoveAll("data/")
-		os.MkdirAll("data", 0600)
+		os.Mkdir("data", 0600)
 		uploadInfo = &UploadInfo{Groceries: make(map[string]float64)}
 		submitInfo = &SubmitInfo{Unwanted: make(map[string]StringSet)}
 		submitInfo.Ready = StringSet{make(map[string]struct{})}
